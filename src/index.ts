@@ -1,8 +1,6 @@
 import { RedisOptions } from "ioredis";
 
-
-import * as Bull from 'bull';
-
+import * as Bull from "bull";
 
 const axios = require("axios");
 const axiosRetry = require("axios-retry");
@@ -66,8 +64,8 @@ class Analytics {
   // The HTTP API has no hard rate limit.
   // However, Segment recommends not exceeding 500 requests per second, including large groups of events sent with a single batch request.
   private queueRateLimit; // rate limit of queues
-  public identifyQueue:Bull.Queue<AnalyticsUserPayload>;
-  public trackQueue:Bull.Queue<AnalyticsDataPayload>;
+  public identifyQueue: Bull.Queue<AnalyticsUserPayload>;
+  public trackQueue: Bull.Queue<AnalyticsDataPayload>;
 
   constructor(apiKey: string, options?: SegmentOptions) {
     options = options || {};
@@ -96,13 +94,13 @@ class Analytics {
       redis: this.redisOptions,
       limiter: this.queueRateLimit,
     });
-    this.processIdentifyUserQueue()
-    this.processTrackDataQueue()
+    this.processIdentifyUserQueue();
+    this.processTrackDataQueue();
   }
 
   // ENQUEUE METHODS
   async enqueue(
-    queue: 'identify' | 'track',
+    queue: "identify" | "track",
     payload: AnalyticsUserPayload | AnalyticsDataPayload
   ) {
     switch (queue) {
@@ -184,4 +182,4 @@ class Analytics {
       }
     });
   }
-};
+}

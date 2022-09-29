@@ -1,7 +1,8 @@
 import { RedisOptions } from "ioredis";
 
-// @ts-ignore
-const Queue = require("bull");
+
+import * as Bull from 'bull';
+
 
 const axios = require("axios");
 const axiosRetry = require("axios-retry");
@@ -65,8 +66,8 @@ class Analytics {
   // The HTTP API has no hard rate limit.
   // However, Segment recommends not exceeding 500 requests per second, including large groups of events sent with a single batch request.
   private queueRateLimit; // rate limit of queues
-  public identifyQueue;
-  public trackQueue;
+  public identifyQueue:Bull.Queue<AnalyticsUserPayload>;
+  public trackQueue:Bull.Queue<AnalyticsDataPayload>;
 
   constructor(apiKey: string, options?: SegmentOptions) {
     options = options || {};
@@ -87,26 +88,28 @@ class Analytics {
     };
 
     // INSTANCIATE QUEUES
-    this.identifyQueue = new Queue(IDENTIFY_USER_QUEUE, {
+    this.identifyQueue = new Bull<AnalyticsUserPayload>(IDENTIFY_USER_QUEUE, {
       redis: this.redisOptions,
       limiter: this.queueRateLimit,
     });
-    this.trackQueue = new Queue(TRACK_DATA_QUEUE, {
+    this.trackQueue = new Bull<AnalyticsDataPayload>(TRACK_DATA_QUEUE, {
       redis: this.redisOptions,
       limiter: this.queueRateLimit,
     });
+    this.processIdentifyUserQueue()
+    this.processTrackDataQueue()
   }
 
   // ENQUEUE METHODS
   async enqueue(
-    queue: string,
+    queue: 'identify' | 'track',
     payload: AnalyticsUserPayload | AnalyticsDataPayload
   ) {
     switch (queue) {
       case IDENTIFY_USER_QUEUE:
-        return await this.identifyQueue.add(payload);
+        return await this.identifyQueue.add(payload as AnalyticsUserPayload);
       case TRACK_DATA_QUEUE:
-        return await this.trackQueue.add(payload);
+        return await this.trackQueue.add(payload as AnalyticsDataPayload);
       default:
         throw new Error("Invalid Analytics Queue");
     }
@@ -163,18 +166,22 @@ class Analytics {
   processIdentifyUserQueue() {
     this.identifyQueue.process(numberOfConcurrentJob, async (job, done) => {
       const userPayload = job.data;
-      await this.postUser(userPayload);
-
-      done();
+      try {
+        await this.postUser(userPayload);
+      } finally {
+        done();
+      }
     });
   }
 
   processTrackDataQueue() {
     this.trackQueue.process(numberOfConcurrentJob, async (job, done) => {
       const userPayload = job.data;
-      await this.postUser(userPayload);
-
-      done();
+      try {
+        await this.postData(userPayload);
+      } finally {
+        done();
+      }
     });
   }
 };

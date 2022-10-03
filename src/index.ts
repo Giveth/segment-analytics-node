@@ -42,7 +42,7 @@ interface AnalyticsDataPayload {
   anonymousId?: string | null | undefined;
 }
 
-class Analytics {
+export class Analytics {
   /**
    * Initialize a new `Analytics` with your Segment project's `writeKey` and an
    * optional dictionary of `options`.

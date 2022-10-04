@@ -8,6 +8,7 @@
     "prettify": "prettier --write '**/*.ts*'",
     "test": "NODE_ENV=test mocha -t 30000 --exit -r ts-node/register src/*.test.ts"
   },
+  "type": "module",
   "keywords": [],
   "author": "Carlos Quintero",
   "license": "ISC",

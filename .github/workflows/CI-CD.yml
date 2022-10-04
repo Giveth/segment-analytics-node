@@ -29,11 +29,6 @@ jobs:
       - name: Run tests
         run: npm run test
 
-  deploy:
-    stage: deploy
-    script:
-      - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-      - npm publish
   publish:
     if: github.ref == 'refs/heads/main'
     needs: test

@@ -6,7 +6,6 @@ const axios = require("axios");
 const axiosRetry = require("axios-retry");
 
 const SEGMENT_API_HOST = "https://api.segment.io";
-const BATCH_URL = "v1/batch";
 const TRACK_URL = "v1/track";
 const IDENTIFY_USER_URL = "v1/identify";
 

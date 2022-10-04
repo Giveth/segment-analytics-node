@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import SegmentAnalytics from "./index";
+const SegmentAnalytics = require("./index");
 
 describe("segmentAnalytics test cases --->", SegmentAnalyticsTestCases);
 

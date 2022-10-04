@@ -2,7 +2,7 @@
   "name": "segment-analytics-node",
   "version": "1.0.1",
   "description": "Segment Analytics Node Queue library with Bull and Redis",
-  "main": "./lib/index.js",
+  "main": "./src/index.ts",
   "scripts": {
     "build": "tsc",
     "prettify": "prettier --write '**/*.ts*'",

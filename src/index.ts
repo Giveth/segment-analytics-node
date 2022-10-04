@@ -184,4 +184,4 @@ class SegmentAnalytics {
   }
 }
 
-export default SegmentAnalytics;
+module.exports = SegmentAnalytics;

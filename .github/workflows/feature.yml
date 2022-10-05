@@ -4,8 +4,6 @@ on:
   push:
     branches-ignore:
       - main
-    tags:
-      - 'v*.*.*'
 
 jobs:
   test:
@@ -33,19 +31,3 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm run test
-
-  publish:
-      needs: test
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-        # Setups .npmrc file to publish to npm
-        - uses: actions/setup-node@v3
-          with:
-            node-version: '16.14.2'
-            registry-url: 'https://registry.npmjs.org'
-        - run: npm ci
-        - run: npm run build
-        - run: npm publish
-          env:
-            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

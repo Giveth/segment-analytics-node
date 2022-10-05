@@ -3,8 +3,8 @@ name:  CI/CD
 on:
   push:
     # Pattern matched against refs/tags
-    branches:
-      - main
+    # Push your code with VERSION UPDATED IN package.json
+    # but this work flow only triggers when you git push --tags
     tags:
       - 'v*.*.*'
 

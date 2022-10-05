@@ -6,7 +6,6 @@ const axios = require("axios");
 const axiosRetry = require("axios-retry");
 
 const SEGMENT_API_HOST = "https://api.segment.io";
-const BATCH_URL = "v1/batch";
 const TRACK_URL = "v1/track";
 const IDENTIFY_USER_URL = "v1/identify";
 
@@ -42,7 +41,7 @@ interface AnalyticsDataPayload {
   anonymousId?: string | null | undefined;
 }
 
-export class Analytics {
+class SegmentAnalytics {
   /**
    * Initialize a new `Analytics` with your Segment project's `writeKey` and an
    * optional dictionary of `options`.
@@ -63,6 +62,7 @@ export class Analytics {
 
   // The HTTP API has no hard rate limit.
   // However, Segment recommends not exceeding 500 requests per second, including large groups of events sent with a single batch request.
+  // Always returns status 200 but if payload is too big, returns error 400
   private queueRateLimit; // rate limit of queues
   public identifyQueue: Bull.Queue<AnalyticsUserPayload>;
   public trackQueue: Bull.Queue<AnalyticsDataPayload>;
@@ -183,3 +183,5 @@ export class Analytics {
     });
   }
 }
+
+module.exports = SegmentAnalytics;

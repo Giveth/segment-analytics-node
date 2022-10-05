@@ -3,10 +3,10 @@ name:  CI/CD
 on:
   push:
     # Pattern matched against refs/tags
+    branches:
+      - main
     tags:
       - 'v*.*.*'
-    branches:
-      - 'main'
 
 jobs:
   test:

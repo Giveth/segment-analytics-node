@@ -5,6 +5,8 @@ on:
     # Pattern matched against refs/tags
     tags:
       - 'v*.*.*'
+    branches:
+      - 'main'
 
 jobs:
   test:

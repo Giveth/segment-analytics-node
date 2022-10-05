@@ -3,11 +3,11 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "outDir": "./lib",
+    "outDir": "lib",
     "strict": true,
     "useUnknownInCatchVariables": false,
     "noImplicitAny": false,
   },
   "include": ["src"],
-  "exclude": ["node_modules", "src/*.test.ts"]
+  "exclude": ["lib", "node_modules", "src/*.test.ts"]
 }

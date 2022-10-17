@@ -27,14 +27,16 @@ interface SegmentOptions {
     password ?: string
   };
   requestsPerSecond?: number;
+
+  // Because segment drops some events, we set a delay after sending each event, default is 100 ms
   sleepMilliSecondBetweenEvents ?: number
 }
 
 interface AnalyticsUserPayload {
   userId: string;
   traits: {
-    firstName: string;
-    email: string;
+    firstName ?: string;
+    email ?: string;
     registeredAt: Date;
   };
 }

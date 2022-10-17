@@ -94,6 +94,8 @@ class SegmentAnalytics {
       redis: this.redisOptions,
       limiter: this.queueRateLimit,
     });
+    this.processIdentifyUserQueue();
+    this.processTrackDataQueue();
   }
 
   // ENQUEUE METHODS

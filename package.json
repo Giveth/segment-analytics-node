@@ -1,6 +1,6 @@
 {
   "name": "segment-analytics-node",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "Segment Analytics Node Queue library with Bull and Redis",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

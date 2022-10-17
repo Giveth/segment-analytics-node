@@ -3,6 +3,11 @@ import Redis from "ioredis";
 import {SegmentAnalytics} from "./index";
 
 const redis = new Redis();
+const redisOptions = {
+    host: 'localhost',
+    port: 6379
+}
+
 
 describe("segmentAnalytics test cases --->", SegmentAnalyticsTestCases);
 
@@ -52,7 +57,9 @@ function SegmentAnalyticsTestCases() {
   // But if payload is too big or API is down returns error 400
   it("assert the SegmentApi is available and responds 200", async () => {
     const SEGMENT_API_KEY = "randomkey";
-    const analytics = new SegmentAnalytics(SEGMENT_API_KEY);
+    const analytics = new SegmentAnalytics(SEGMENT_API_KEY, {
+        redisConnectionInfo: redisOptions
+    });
     const result = await analytics.postUser(userPayload);
 
     assert.isOk(result);
@@ -62,7 +69,9 @@ function SegmentAnalyticsTestCases() {
 
   it("should enqueue userIdentify Queue when called", async () => {
     const SEGMENT_API_KEY = "randomkey";
-    const analytics = new SegmentAnalytics(SEGMENT_API_KEY);
+    const analytics = new SegmentAnalytics(SEGMENT_API_KEY, {
+        redisConnectionInfo: redisOptions
+    });
     await analytics.identify(userPayload);
     const identifyQueueCount = await analytics.identifyQueue.getJobCounts();
     assert.isOk(identifyQueueCount);
@@ -74,7 +83,9 @@ function SegmentAnalyticsTestCases() {
 
   it("should enqueue Track Queue when called", async () => {
     const SEGMENT_API_KEY = "randomkey";
-    const analytics = new SegmentAnalytics(SEGMENT_API_KEY);
+    const analytics = new SegmentAnalytics(SEGMENT_API_KEY, {
+        redisConnectionInfo: redisOptions
+    });
     await analytics.track(trackPayload);
     const trackQueueCount = await analytics.trackQueue.getJobCounts();
     assert.isOk(trackQueueCount);

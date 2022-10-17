@@ -21,12 +21,13 @@ const TRACK_DATA_QUEUE = "track";
 const numberOfConcurrentJob = 1;
 
 interface SegmentOptions {
-  redisConnectionInfo ?: {
+  redisConnectionInfo : {
     host:string,
     port:number,
     password ?: string
   };
   requestsPerSecond?: number;
+  sleepMilliSecondBetweenEvents ?: number
 }
 
 interface AnalyticsUserPayload {
@@ -44,6 +45,11 @@ interface AnalyticsDataPayload {
   properties: any;
   anonymousId?: string | null | undefined;
 }
+
+
+export const sleep = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
 
 export class SegmentAnalytics {
   /**
@@ -63,6 +69,7 @@ export class SegmentAnalytics {
   private readonly apiKey: string;
   private readonly host: string;
   private readonly redisOptions: RedisOptions;
+  private readonly sleepMilliSecondBetweenEvents: number;
 
   // The HTTP API has no hard rate limit.
   // However, Segment recommends not exceeding 500 requests per second, including large groups of events sent with a single batch request.
@@ -71,17 +78,17 @@ export class SegmentAnalytics {
   public identifyQueue: Bull.Queue<AnalyticsUserPayload>;
   public trackQueue: Bull.Queue<AnalyticsDataPayload>;
 
-  constructor(apiKey: string, options?: SegmentOptions) {
-    options = options || {};
+  constructor(apiKey: string, options: SegmentOptions) {
     this.apiKey = apiKey;
     this.host = SEGMENT_API_HOST;
+    this.sleepMilliSecondBetweenEvents = options.sleepMilliSecondBetweenEvents || 100
     this.redisOptions = {
-      host: options?.redisConnectionInfo?.host || DEFAULT_REDIS_HOST,
-      port: options?.redisConnectionInfo?.port || DEFAULT_REDIS_PORT,
+      host: options.redisConnectionInfo.host,
+      port: options.redisConnectionInfo.port ,
     };
 
     if (options.redisConnectionInfo?.password) {
-      this.redisOptions.password = options?.redisConnectionInfo?.password;
+      this.redisOptions.password = options.redisConnectionInfo?.password;
     }
 
     this.queueRateLimit = {
@@ -181,6 +188,7 @@ export class SegmentAnalytics {
       const userPayload = job.data;
       try {
         await this.postData(userPayload);
+        await sleep(this.sleepMilliSecondBetweenEvents)
       } finally {
         done();
       }

@@ -21,7 +21,11 @@ const TRACK_DATA_QUEUE = "track";
 const numberOfConcurrentJob = 1;
 
 interface SegmentOptions {
-  redisConnectionInfo?: RedisOptions;
+  redisConnectionInfo: {
+    host:string,
+    port:number,
+    password ?: string
+  };
   requestsPerSecond?: number;
 }
 
@@ -67,7 +71,7 @@ export class SegmentAnalytics {
   public identifyQueue: Bull.Queue<AnalyticsUserPayload>;
   public trackQueue: Bull.Queue<AnalyticsDataPayload>;
 
-  constructor(apiKey: string, options?: SegmentOptions) {
+  constructor(apiKey: string, options: SegmentOptions) {
     options = options || {};
     this.apiKey = apiKey;
     this.host = SEGMENT_API_HOST;

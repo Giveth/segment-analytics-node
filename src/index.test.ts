@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import Redis from "ioredis";
+import {SegmentAnalytics} from "./index";
 
-const SegmentAnalytics = require("./index");
 const redis = new Redis();
 
 describe("segmentAnalytics test cases --->", SegmentAnalyticsTestCases);

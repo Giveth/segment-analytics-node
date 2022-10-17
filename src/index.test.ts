@@ -1,8 +1,36 @@
 import { assert } from "chai";
+import Redis from "ioredis";
+
 const SegmentAnalytics = require("./index");
+const redis = new Redis();
 
 describe("segmentAnalytics test cases --->", SegmentAnalyticsTestCases);
 
+// utils
+const deleteKeysByPattern = (pattern: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        const stream = redis.scanStream({
+            match: pattern
+        });
+        stream.on("data", (keys: string[]) => {
+            if (keys.length) {
+                const pipeline = redis.pipeline();
+                keys.forEach((key) => {
+                    pipeline.del(key);
+                });
+                pipeline.exec();
+            }
+        });
+        stream.on("end", () => {
+            resolve();
+        });
+        stream.on("error", (e) => {
+            reject(e);
+        });
+    });
+};
+
+// main tests
 function SegmentAnalyticsTestCases() {
   const userPayload = {
     userId: "test-test",
@@ -38,12 +66,10 @@ function SegmentAnalyticsTestCases() {
     await analytics.identify(userPayload);
     const identifyQueueCount = await analytics.identifyQueue.getJobCounts();
     assert.isOk(identifyQueueCount);
-    assert.isTrue(identifyQueueCount.active === 1);
+    assert.isTrue(identifyQueueCount.waiting === 1);
 
     // clean queue for local tests
-    const queueStatus = analytics.identifyQueue.multi();
-    queueStatus.del(analytics.identifyQueue.toKey("active"));
-    queueStatus.exec();
+    deleteKeysByPattern('bull:identify:*')
   });
 
   it("should enqueue Track Queue when called", async () => {
@@ -52,11 +78,9 @@ function SegmentAnalyticsTestCases() {
     await analytics.track(trackPayload);
     const trackQueueCount = await analytics.trackQueue.getJobCounts();
     assert.isOk(trackQueueCount);
-    assert.isTrue(trackQueueCount.active === 1);
+    assert.isTrue(trackQueueCount.waiting === 1);
 
     // clean queue for local tests
-    const queueStatus = analytics.trackQueue.multi();
-    queueStatus.del(analytics.trackQueue.toKey("active"));
-    queueStatus.exec();
+    await  deleteKeysByPattern('bull:track:*')
   });
 }

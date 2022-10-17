@@ -41,7 +41,7 @@ interface AnalyticsDataPayload {
   anonymousId?: string | null | undefined;
 }
 
-class SegmentAnalytics {
+export class SegmentAnalytics {
   /**
    * Initialize a new `Analytics` with your Segment project's `writeKey` and an
    * optional dictionary of `options`.
@@ -56,14 +56,14 @@ class SegmentAnalytics {
    *   @property {Number} [rateLimit] (default: 10)
    */
 
-  private apiKey: string;
-  private host: string;
-  private redisOptions: RedisOptions;
+  private readonly apiKey: string;
+  private readonly host: string;
+  private readonly redisOptions: RedisOptions;
 
   // The HTTP API has no hard rate limit.
   // However, Segment recommends not exceeding 500 requests per second, including large groups of events sent with a single batch request.
   // Always returns status 200 but if payload is too big, returns error 400
-  private queueRateLimit; // rate limit of queues
+  private readonly queueRateLimit; // rate limit of queues
   public identifyQueue: Bull.Queue<AnalyticsUserPayload>;
   public trackQueue: Bull.Queue<AnalyticsDataPayload>;
 
@@ -184,4 +184,3 @@ class SegmentAnalytics {
   }
 }
 
-module.exports = SegmentAnalytics;

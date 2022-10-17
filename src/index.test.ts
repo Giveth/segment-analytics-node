@@ -66,7 +66,7 @@ function SegmentAnalyticsTestCases() {
     await analytics.identify(userPayload);
     const identifyQueueCount = await analytics.identifyQueue.getJobCounts();
     assert.isOk(identifyQueueCount);
-    assert.isTrue(identifyQueueCount.waiting === 1);
+    assert.isTrue(identifyQueueCount.active === 1);
 
     // clean queue for local tests
     deleteKeysByPattern('bull:identify:*')
@@ -78,7 +78,7 @@ function SegmentAnalyticsTestCases() {
     await analytics.track(trackPayload);
     const trackQueueCount = await analytics.trackQueue.getJobCounts();
     assert.isOk(trackQueueCount);
-    assert.isTrue(trackQueueCount.waiting === 1);
+    assert.isTrue(trackQueueCount.active === 1);
 
     // clean queue for local tests
     await  deleteKeysByPattern('bull:track:*')

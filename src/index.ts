@@ -21,7 +21,7 @@ const TRACK_DATA_QUEUE = "track";
 const numberOfConcurrentJob = 1;
 
 interface SegmentOptions {
-  redisConnectionInfo: {
+  redisConnectionInfo ?: {
     host:string,
     port:number,
     password ?: string
@@ -71,17 +71,17 @@ export class SegmentAnalytics {
   public identifyQueue: Bull.Queue<AnalyticsUserPayload>;
   public trackQueue: Bull.Queue<AnalyticsDataPayload>;
 
-  constructor(apiKey: string, options: SegmentOptions) {
+  constructor(apiKey: string, options?: SegmentOptions) {
     options = options || {};
     this.apiKey = apiKey;
     this.host = SEGMENT_API_HOST;
     this.redisOptions = {
-      host: options.redisConnectionInfo?.host || DEFAULT_REDIS_HOST,
-      port: options.redisConnectionInfo?.port || DEFAULT_REDIS_PORT,
+      host: options?.redisConnectionInfo?.host || DEFAULT_REDIS_HOST,
+      port: options?.redisConnectionInfo?.port || DEFAULT_REDIS_PORT,
     };
 
     if (options.redisConnectionInfo?.password) {
-      this.redisOptions.password = options.redisConnectionInfo?.password;
+      this.redisOptions.password = options?.redisConnectionInfo?.password;
     }
 
     this.queueRateLimit = {
